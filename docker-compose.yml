@@ -1,0 +1,22 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+    environment:
+      DB_URL: "jdbc:sqlserver://sqlserver:1433;databaseName=master;encrypt=true;trustServerCertificate=true"
+      DB_USER: sa
+      DB_PASSWORD: ${DB_PASSWORD}
+volumes:
+  sql_data:
